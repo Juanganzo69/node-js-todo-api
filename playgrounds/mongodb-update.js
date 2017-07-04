@@ -1,9 +1,9 @@
 const { MongoClient, ObjectID } = require('mongodb');
 //
 
-MongoClient.connect('mongodb://localhost:27017/TodoApp', ( err, db ) => {
-    if( err ){
-       return console.log('No se puede conectar a la base de datos');
+MongoClient.connect('mongodb://localhost:27017/TodoApp', (err, db) => {
+    if (err) {
+        return console.log('No se puede conectar a la base de datos');
     }
     console.log('Conectado a servidor de Mongodb');
 
@@ -23,21 +23,21 @@ MongoClient.connect('mongodb://localhost:27017/TodoApp', ( err, db ) => {
     // });
 
     db.collection('Users').findOneAndUpdate(
-    {
-        _id : new ObjectID('5959d18af302770b7cee13bf')
-    },
-    {
-        $set: {
-            nombre: 'Juan de Dios'
+        {
+            _id: new ObjectID('5959d18af302770b7cee13bf')
         },
-        $inc : {
-            edad : 1
-        }
-    },
-    {
-        returnOriginal : false
-    }).then( (res) =>{
-        console.log(res.value);
-    });
+        {
+            $set: {
+                nombre: 'Juan de Dios'
+            },
+            $inc: {
+                edad: 1
+            }
+        },
+        {
+            returnOriginal: false
+        }).then((res) => {
+            console.log(res.value);
+        });
     //db.close();
 });
