@@ -102,3 +102,41 @@ describe('GET /todos/:id', () => {
         .end(done);
     });
 });
+
+describe('DELETE /todos/:id' ,() => {
+    it('Deberá borrar un todo', (done) => {
+        var hexId = todos[1]._id.toHexString();
+        request(app)
+        .delete(`/todos/${ hexId }`)
+        .expect(200)
+        .expect( (res) => {
+           expect(res.body.todo._id).toBe(hexId);     
+        })
+        .end( (err, res) => {
+            if(res){
+                return done(err);
+            }
+
+            Todo.findById(hexId).then( (todo) => {
+                expect(todo).toNotExist();
+                done();
+            }).catch( (e) => done(e));
+        });
+    });
+
+    it('Deberá retornar error 404 si no existe el todo', (done) => {
+        var hexId = new ObjectID().toHexString();
+
+            request(app)
+            .delete(`/todos/${ hexId }`)
+            .expect(404)
+            .end(done);
+    });
+
+    it('Deberá marcar error si el objectId es inválido', (done) => {
+        request(app)
+        .delete('/todos/23dfs')
+        .expect(404)
+        .end(done);
+    });
+}); 
