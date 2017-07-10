@@ -7,6 +7,7 @@ var { Todo } = require('./models/todo');
 var { User } = require('./models/user');
 
 var app = express();
+var port = process.env.PORT || 3000;
 
 app.use(bodyParse.json());
 
@@ -46,8 +47,12 @@ app.get('/todos/:id', ( req, res ) => {
 
 });
 
-app.listen(3000, () => {
-    console.log('La aplicación está escuchando en el puerto 3000');
+// app.listen(3000, () => {
+//     console.log('La aplicación está escuchando en el puerto 3000');
+// });
+
+app.listen( port, () =>  {
+    console.log(`Se está iniciando en el puerto ${ port }`);
 });
 
 module.exports = { app };
