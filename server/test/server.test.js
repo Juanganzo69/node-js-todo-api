@@ -10,7 +10,9 @@ const todos = [{
     texto : "Ejemplo 1"
 },{
     _id: new ObjectID(),   
-    texto : "Ejemplo 2"
+    texto : "Ejemplo 2",
+    completado : true,
+    completadoAt: 333
 }];
 
 beforeEach( (done) => {
@@ -137,6 +139,46 @@ describe('DELETE /todos/:id' ,() => {
         request(app)
         .delete('/todos/23dfs')
         .expect(404)
+        .end(done);
+    });
+});
+
+describe('PATCH /todos/:id', () =>{
+    it('Deberá actualizar el todo', (done) => {
+        var hexId = todos[0]._id.toHexString();
+        var texto = 'Algo nuevo';
+
+        request(app)
+        .patch(`/todos/${ hexId }`)
+        .expect(200)
+        .send({
+            completado: true,
+            texto
+        })
+        .expect( (res) => {
+            expect(res.body.todo.texto).toBe(texto);
+            expect(res.body.todo.completado).toBe(true);
+            expect(res.body.todo.completadoAt).toBeA('number');
+        })
+        .end(done);
+    });
+
+    it('Deberá limpiar el completadoAt cuando completado sea falso', (done) => {
+        var hexId = todos[1]._id.toHexString();
+        var texto = 'Algo nuevo!!';
+
+        request(app)
+        .patch(`/todos/${ hexId }`)
+        .expect(200)
+        .send({
+            completado: false,
+            texto
+        })
+        .expect( (res) => {
+            expect(res.body.todo.texto).toBe(texto);
+            expect(res.body.todo.completado).toBe(false);
+            expect(res.body.todo.completadoAt).toNotExist();
+        })
         .end(done);
     });
 }); 
