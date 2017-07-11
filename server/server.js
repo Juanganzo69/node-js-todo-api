@@ -1,3 +1,4 @@
+const _ = require('lodash');
 var { ObjectID } = require('mongodb');
 var express = require('express');
 var bodyParse = require('body-parser');
@@ -63,10 +64,32 @@ app.delete('/todos/:id', (req, res) => {
     }).catch( (e) => res.status(404).send());
 });
 
-// app.listen(3000, () => {
-//     console.log('La aplicación está escuchando en el puerto 3000');
-// });
+app.patch('/todos/:id', ( req, res ) => {
+    var id = req.params.id;
+    var body = _.pick(req.body, ['texto', 'completado']);
 
+    if( !ObjectID.isValid(id) ){
+        return res.status(404).send();
+    }
+
+    if( _.isBoolean(body.completado) && body.completado){
+        body.completadoAt = new Date().getTime();
+    }else{
+        body.completado = false;
+        body.completadoAt = null;
+    }
+
+    Todo.findByIdAndUpdate(id,{$set: body}, {new: true} ).then( (todo) => {
+        if( !todo ){
+            return res.status(404).send();
+        }
+
+        res.send({todo});
+    }).catch( (e) => {
+        return res.status(400).send();
+    });
+
+});
 app.listen( port, () =>  {
     console.log(`Se está iniciando en el puerto ${ port }`);
 });
