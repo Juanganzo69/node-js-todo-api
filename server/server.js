@@ -119,8 +119,16 @@ app.post('/users/login', ( req, res ) => {
     }).catch( (e) => {
         res.status(400).send();
     });
-
 });
+
+app.delete('/users/me/token', autentificacion, (req, res) =>  {
+    req.user.quitarToken(req.token).then( () => {
+        res.status(200).send();
+    }, () => {
+        res.status(200).send();
+    });
+});
+
 
 app.listen( port, () =>  {
     console.log(`Se está iniciando en el puerto ${ port }`);
