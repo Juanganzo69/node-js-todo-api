@@ -197,7 +197,7 @@ describe('GET /users/me', () => {
     });
 });
 
-describe('GET /users', () => {
+describe('POST /users', () => {
     it('Deberá crear un usuario', (done) => {
         
         var email = 'ejemplo3@gmail.com';
@@ -224,7 +224,7 @@ describe('GET /users', () => {
                 expect(user).toExist();
                 expect(user.password).toNotBe(password);
                 done();
-            });
+            }).catch( (e) => done(e));
         });
     });
 
@@ -251,3 +251,54 @@ describe('GET /users', () => {
         .end(done);
     });
 }); 
+
+describe('POST /users/login', () => {
+    it('Deberá loguear un usuario y retornar el auth token', (done) => {
+        request(app)
+        .post('/users/login')
+        .send({
+            email: users[1].email,
+            password: users[1].password
+        })
+        .expect(200)
+        .expect((res) => {
+            expect(res.headers['x-auth']).toExist();
+        })
+        .end(( err, res) => {
+            if( err ){
+                return done(err);
+            }
+
+            User.findById( users[1]._id ).then( (user) => {
+                expect(user.tokens[0]).toInclude({
+                    access: 'auth',
+                    token: res.headers['x-auth']
+                });
+                done();
+            }).catch( (e) => done(e))
+        });
+    });
+
+    it('Deberá ocurrir un reject con un login inválido', () => {
+        request(app)
+        .post('/users/login')
+        .send({
+            email: users[1].email,
+            password: users[1].password + '2'
+        })
+        .expect(400)
+        .expect((res) => {
+            expect(res.headers['x-auth']).toNotExist();
+        })
+        .end(( err, res) => {
+            if( err ){
+                return done(err);
+            }
+
+            User.findById( users[1]._id ).then( (user) => {
+                expect(user.tokens.length).toBe(0);
+                done();
+            }).catch( (e) => done(e))
+        });
+    });
+});
