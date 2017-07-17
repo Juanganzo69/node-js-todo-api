@@ -9,12 +9,14 @@ var userTwoId = new ObjectID();
 
 const todos = [{
     _id: new ObjectID(),
-    texto : "Ejemplo 1"
+    texto : "Ejemplo 1",
+    _creator : userId
 },{
     _id: new ObjectID(),   
     texto : "Ejemplo 2",
     completado : true,
-    completadoAt: 333
+    completadoAt: 333,
+    _creator : userTwoId
 }];
 
 const users = [{
@@ -28,7 +30,11 @@ const users = [{
 }, {
     _id: userTwoId,
     email: 'ejemplo@live.com',
-    password:'yselacreyo'
+    password:'yselacreyo',
+    tokens:[{
+        access: 'auth',
+        token: jwt.sign({ _id: userTwoId, access: 'auth' }, '123abc').toString()
+    }]
 }];
 
 const llenarTodo = (done) => {
